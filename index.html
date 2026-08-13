@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مملكة الذئاب - النسخة المطورة</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- مؤثرات صوتية جاهزة -->
+    <audio id="audio-click" src="https://actions.google.com/sounds/v1/ui/button_click.ogg" preload="auto"></audio>
+    <audio id="audio-wolf" src="https://actions.google.com/sounds/v1/animals/wolf_howl.ogg" preload="auto"></audio>
+
+    <div class="game-wrapper">
+        <header class="app-header">
+            <div class="header-top-row">
+                <div class="logo-icon">🐺</div>
+                <button id="sound-toggle-btn" class="sound-btn" onclick="toggleSound()">🔊 الصوت: مفعل</button>
+            </div>
+            <h1>مملكة الذئاب الاحترافية</h1>
+            <p>نسخة الهاتف الواحد المتقدمة</p>
+        </header>
+
+        <!-- الشاشة الأولى: إدخال الأسماء -->
+        <div id="screen-names" class="screen-panel active">
+            <div class="glass-card">
+                <h2>المشاركون في المعركة</h2>
+                <p class="hint-text">أدخل أسماء اللاعبين أو الصقها دفعة واحدة:</p>
+                
+                <div class="input-group">
+                    <input type="text" id="name-input" placeholder="اسم اللاعب..." />
+                    <button class="btn btn-primary" onclick="addPlayer()">إضافة</button>
+                </div>
+
+                <textarea id="bulk-input" placeholder="أو اكتب الأسماء مفصولة بفاصلة (مثال: أحمد, علي, ساره)..."></textarea>
+                <button class="btn btn-secondary" onclick="addBulkPlayers()">إضافة القائمة كاملة</button>
+
+                <div class="list-preview">
+                    <h3>اللاعبون المسجلون (<span id="count-span">0</span>):</h3>
+                    <ul id="tags-ul"></ul>
+                </div>
+
+                <button class="btn btn-success btn-lg" onclick="goToRolesScreen()">التالي: إعداد الأدوار ⚡</button>
+            </div>
+        </div>
+
+        <!-- الشاشة الثانية: اختيار الأدوار -->
+        <div id="screen-roles" class="screen-panel">
+            <div class="glass-card">
+                <h2>تخصيص الأدوار المتقدمة</h2>
+                <p class="hint-text">اختر الشخصيات التي ستتواجد في هذه الجولة:</p>
+
+                <div class="roles-grid">
+                    <label class="role-card active">
+                        <input type="checkbox" checked disabled>
+                        <span>الذئب البشري 🐺 <small>(أساسي)</small></span>
+                    </label>
+                    <label class="role-card active">
+                        <input type="checkbox" checked disabled>
+                        <span>المواطن البريء 👤 <small>(أساسي)</small></span>
+                    </label>
+                    <label class="role-card">
+                        <input type="checkbox" id="chk-doctor" checked>
+                        <span>الطبيب البارع 💉</span>
+                    </label>
+                    <label class="role-card">
+                        <input type="checkbox" id="chk-detective" checked>
+                        <span>المحقق السري 🔍</span>
+                    </label>
+                    <label class="role-card">
+                        <input type="checkbox" id="chk-guard" checked>
+                        <span>الحارس المحترف 🛡️</span>
+                    </label>
+                    <label class="role-card">
+                        <input type="checkbox" id="chk-witch" checked>
+                        <span>الساحرة الماكرة 🧪</span>
+                    </label>
+                    <label class="role-card">
+                        <input type="checkbox" id="chk-hunter" checked>
+                        <span>القناص المنتقم 🎯</span>
+                    </label>
+                </div>
+
+                <button class="btn btn-success btn-lg" onclick="startSecretDistribution()">توزيع الأدوار وبدء المعركة ⚔️</button>
+                <button class="btn btn-text" onclick="showScreen('screen-names')">← العودة للأسماء</button>
+            </div>
+        </div>
+
+        <!-- الشاشة الثالثة: تسليم الهاتف، كشف الدور، واختيار الهدف فوراً -->
+        <div id="screen-secret" class="screen-panel">
+            <div class="glass-card text-center">
+                <div id="first-pass-section" class="pass-alert">
+                    <span class="pulse-icon">📱</span>
+                    <h3>أعط الهاتف حصرياً إلى:</h3>
+                    <h1 id="secret-player-name" class="name-highlight">الاسم</h1>
+                    <p class="warning-txt">تأكد من عدم رؤية أي شخص آخر للشاشة!</p>
+                    <button class="btn btn-primary btn-lg" onclick="revealInitialRole()">أنا اللاعب المعني، اكشف دوري 👁️</button>
+                </div>
+
+                <div id="secret-card-content" class="reveal-box hidden">
+                    <span class="sub-label">دورك السري المخصص:</span>
+                    <h2 id="assigned-role-title" class="role-title">---</h2>
+                    <p id="assigned-role-desc" class="role-desc">---</p>
+
+                    <!-- منطقة اختيار الهدف فوراً -->
+                    <div id="secret-action-area" class="action-target-area hidden" style="margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px; text-align: right;">
+                        <h4 id="secret-action-prompt" style="font-size: 13px; margin-bottom: 6px; color: #f3f4f6;">اختر هدفك لتنفيذ مهمتك:</h4>
+                        <select id="secret-target-select" class="game-select"></select>
+                    </div>
+
+                    <button class="btn btn-success btn-lg" onclick="hideAndPassNext()" style="margin-top: 12px;">تم وتمرير الهاتف ✓</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشاشة الرابعة: لوحة اللعب الرئيسية (نهار، تصويت، سجل) -->
+        <div id="screen-game" class="screen-panel">
+            <div class="glass-card">
+                <div class="game-top-bar">
+                    <h3 id="phase-header-title">☀️ مرحلة النهار</h3>
+                    <span id="round-badge" class="badge">الجولة 1</span>
+                </div>
+
+                <p id="phase-desc-text" class="phase-desc">البلدة استيقظت..</p>
+
+                <!-- صندوق نقاش النهار -->
+                <div id="day-discussion-box" class="action-card hidden">
+                    <h4>💬 مرحلة النقاش والتحليل</h4>
+                    <p class="sub-hint">تحدثوا بحرية واتفقوا على المشتبه به!</p>
+                    <button class="btn btn-warning" onclick="openVotingScreen()">الانتقال لمرحلة التصويت ⚖️</button>
+                </div>
+
+                <!-- صندوق التصويت -->
+                <div id="voting-box" class="action-card hidden">
+                    <h4>⚖️ صندوق التصويت والإعدام</h4>
+                    <p class="sub-hint">حدد من ترشح لإعدامه:</p>
+                    <div id="voting-rows-container" class="voting-list"></div>
+                    <button class="btn btn-danger" onclick="finishVotingAndExecute()">تنفيذ التصويت وإعلان النتيجة 🗳️</button>
+                </div>
+
+                <!-- صندوق انتقام القناص لو وجد -->
+                <div id="hunter-revenge-box" class="action-card hidden" style="border-color: #ef4444;">
+                    <h4>🎯 طلقة القناص الأخيرة!</h4>
+                    <p class="sub-hint" id="hunter-revenge-text">لقد سقط القناص، اختر شخصاً لتأخذه معك:</p>
+                    <select id="hunter-target-select" class="game-select" style="margin-bottom: 8px;"></select>
+                    <button class="btn btn-danger" onclick="submitHunterRevenge()">أطلق النار وانهي الجولة ⚡</button>
+                </div>
+
+                <div class="status-board">
+                    <h4>حالة سكان البلدة:</h4>
+                    <ul id="players-status-ul"></ul>
+                </div>
+
+                <!-- سجل الأحداث -->
+                <div class="status-board" style="margin-top: 10px; max-height: 90px;">
+                    <h4>📜 سجل الأحداث السابقة:</h4>
+                    <ul id="game-log-ul"></ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- الشاشة الخامسة: النهاية -->
+        <div id="screen-gameover" class="screen-panel">
+            <div class="glass-card text-center">
+                <div class="trophy-icon">🏆</div>
+                <h2>انتهت المعركة الكبرى!</h2>
+                <h3 id="winner-announcement" class="winner-txt">الفائزون...</h3>
+                
+                <div class="recap-box">
+                    <h4>سجل الأدوار الكامل:</h4>
+                    <ul id="recap-ul"></ul>
+                </div>
+
+                <button class="btn btn-primary btn-lg" onclick="location.reload()">لعب من جديد 🔄</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
