@@ -3,177 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مملكة الذئاب - النسخة المطورة</title>
+    <title>المستذئب - الكلاسيكية</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body>
+<body class="dark-mode">
 
-    <!-- مؤثرات صوتية جاهزة -->
-    <audio id="audio-click" src="dragon-studio-wolf-howl-2-359870.mp3" preload="auto"></audio>
-    <audio id="audio-wolf" src="dragon-studio-wolf-howl-2-359870.mp3" preload="auto"></audio>
+    <div id="app-container">
 
-    <div class="game-wrapper">
-        <header class="app-header">
-            <div class="header-top-row">
-                <div class="logo-icon">🐺</div>
-                <button id="sound-toggle-btn" class="sound-btn" onclick="toggleSound()">🔊 الصوت: مفعل</button>
+        <!-- 1. الشاشة الرئيسية -->
+        <section id="home-screen" class="game-screen active">
+            <div class="top-header-banner">
+                <div class="moon-logo-circle">
+                    <img id="app-logo-img" src="" alt="شعار اللعبة">
+                </div>
+                <h1 class="classic-title">المستذئب</h1>
+                <p class="subtitle">لعبة القرية والغموض الكلاسيكية</p>
             </div>
-            <h1>مملكة الذئاب الاحترافية</h1>
-            <p>نسخة الهاتف الواحد المتقدمة</p>
-        </header>
 
-        <!-- الشاشة الأولى: إدخال الأسماء -->
-        <div id="screen-names" class="screen-panel active">
-            <div class="glass-card">
-                <h2>المشاركون في المعركة</h2>
-                <p class="hint-text">أدخل أسماء اللاعبين أو الصقها دفعة واحدة:</p>
+            <div class="card-box scrollable">
+                <h3 class="section-title"><i class="fa-solid fa-scroll"></i> إعدادات المعركة والعدادات</h3>
                 
-                <div class="input-group">
-                    <input type="text" id="name-input" placeholder="اسم اللاعب..." />
-                    <button class="btn btn-primary" onclick="addPlayer()">إضافة</button>
+                <div class="setting-row-item">
+                    <span>عدد اللاعبين</span>
+                    <span class="setting-value-badge" id="main-players-count">8 لاعبين</span>
                 </div>
 
-                <textarea id="bulk-input" placeholder="أو اكتب الأسماء مفصولة بفاصلة (مثال: أحمد, علي, ساره)..."></textarea>
-                <button class="btn btn-secondary" onclick="addBulkPlayers()">إضافة القائمة كاملة</button>
-
-                <div class="list-preview">
-                    <h3>اللاعبون المسجلون (<span id="count-span">0</span>):</h3>
-                    <ul id="tags-ul"></ul>
-                </div>
-
-                <button class="btn btn-success btn-lg" onclick="goToRolesScreen()">التالي: إعداد الأدوار ⚡</button>
-            </div>
-        </div>
-
-        <!-- الشاشة الثانية: اختيار الأدوار -->
-        <div id="screen-roles" class="screen-panel">
-            <div class="glass-card">
-                <h2>تخصيص الأدوار المتقدمة</h2>
-                <p class="hint-text">اختر الشخصيات التي ستتواجد في هذه الجولة:</p>
-
-                <div class="roles-grid">
-                    <label class="role-card active">
-                        <input type="checkbox" checked disabled>
-                        <span>الذئب البشري 🐺 <small>(أساسي)</small></span>
-                    </label>
-                    <label class="role-card active">
-                        <input type="checkbox" checked disabled>
-                        <span>المواطن البريء 👤 <small>(أساسي)</small></span>
-                    </label>
-                    <label class="role-card">
-                        <input type="checkbox" id="chk-doctor" checked>
-                        <span>الطبيب البارع 💉</span>
-                    </label>
-                    <label class="role-card">
-                        <input type="checkbox" id="chk-detective" checked>
-                        <span>المحقق السري 🔍</span>
-                    </label>
-                    <label class="role-card">
-                        <input type="checkbox" id="chk-guard" checked>
-                        <span>الحارس المحترف 🛡️</span>
-                    </label>
-                    <label class="role-card">
-                        <input type="checkbox" id="chk-witch" checked>
-                        <span>الساحرة الماكرة 🧪</span>
-                    </label>
-                    <label class="role-card">
-                        <input type="checkbox" id="chk-hunter" checked>
-                        <span>القناص المنتقم 🎯</span>
-                    </label>
-                </div>
-
-                <button class="btn btn-success btn-lg" onclick="startSecretDistribution()">توزيع الأدوار وبدء المعركة ⚔️</button>
-                <button class="btn btn-text" onclick="showScreen('screen-names')">← العودة للأسماء</button>
-            </div>
-        </div>
-
-        <!-- الشاشة الثالثة: تسليم الهاتف، كشف الدور، واختيار الهدف فوراً -->
-        <div id="screen-secret" class="screen-panel">
-            <div class="glass-card text-center">
-                <div id="first-pass-section" class="pass-alert">
-                    <span class="pulse-icon">📱</span>
-                    <h3>أعط الهاتف حصرياً إلى:</h3>
-                    <h1 id="secret-player-name" class="name-highlight">الاسم</h1>
-                    <p class="warning-txt">تأكد من عدم رؤية أي شخص آخر للشاشة!</p>
-                    <button class="btn btn-primary btn-lg" onclick="revealInitialRole()">أنا اللاعب المعني، اكشف دوري 👁️</button>
-                </div>
-
-                <div id="secret-card-content" class="reveal-box hidden">
-                    <span class="sub-label">دورك السري المخصص:</span>
-                    <h2 id="assigned-role-title" class="role-title">---</h2>
-                    <p id="assigned-role-desc" class="role-desc">---</p>
-
-                    <!-- منطقة اختيار الهدف فوراً -->
-                    <div id="secret-action-area" class="action-target-area hidden" style="margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px; text-align: right;">
-                        <h4 id="secret-action-prompt" style="font-size: 13px; margin-bottom: 6px; color: #f3f4f6;">اختر هدفك لتنفيذ مهمتك:</h4>
-                        <select id="secret-target-select" class="game-select"></select>
+                <!-- إمكانية تغيير وقت النقاش -->
+                <div class="setting-row-item">
+                    <span>وقت النقاش</span>
+                    <div class="setting-controls">
+                        <button class="setting-btn" onclick="GameSetup.adjustTime('discussionTime', -15)">-</button>
+                        <span class="setting-value-badge" id="setting-discussion-time">90 ثانية</span>
+                        <button class="setting-btn" onclick="GameSetup.adjustTime('discussionTime', 15)">+</button>
                     </div>
-
-                    <button class="btn btn-success btn-lg" onclick="hideAndPassNext()" style="margin-top: 12px;">تم وتمرير الهاتف ✓</button>
                 </div>
+
+                <!-- إمكانية تغيير وقت التصويت -->
+                <div class="setting-row-item">
+                    <span>وقت التصويت</span>
+                    <div class="setting-controls">
+                        <button class="setting-btn" onclick="GameSetup.adjustTime('votingTime', -10)">-</button>
+                        <span class="setting-value-badge" id="setting-voting-time">45 ثانية</span>
+                        <button class="setting-btn" onclick="GameSetup.adjustTime('votingTime', 10)">+</button>
+                    </div>
+                </div>
+
+                <!-- زر تبديل الوضع (داكن / فاتح) -->
+                <div class="setting-row-item">
+                    <span>مظهر التطبيق</span>
+                    <button class="btn-theme-toggle" onclick="App.toggleTheme()">
+                        <i class="fa-solid fa-circle-half-stroke"></i> تبديل (داكن/فاتح)
+                    </button>
+                </div>
+
+                <button class="btn-classic" onclick="GameSetup.startDistribution()">
+                    <i class="fa-solid fa-moon"></i> بدء اللعبة الكلاسيكية
+                </button>
             </div>
-        </div>
+        </section>
 
-        <!-- الشاشة الرابعة: لوحة اللعب الرئيسية (نهار، تصويت، سجل) -->
-        <div id="screen-game" class="screen-panel">
-            <div class="glass-card">
-                <div class="game-top-bar">
-                    <h3 id="phase-header-title">☀️ مرحلة النهار</h3>
-                    <span id="round-badge" class="badge">الجولة 1</span>
-                </div>
-
-                <p id="phase-desc-text" class="phase-desc">البلدة استيقظت..</p>
-
-                <!-- صندوق نقاش النهار -->
-                <div id="day-discussion-box" class="action-card hidden">
-                    <h4>💬 مرحلة النقاش والتحليل</h4>
-                    <p class="sub-hint">تحدثوا بحرية واتفقوا على المشتبه به!</p>
-                    <button class="btn btn-warning" onclick="openVotingScreen()">الانتقال لمرحلة التصويت ⚖️</button>
-                </div>
-
-                <!-- صندوق التصويت -->
-                <div id="voting-box" class="action-card hidden">
-                    <h4>⚖️ صندوق التصويت والإعدام</h4>
-                    <p class="sub-hint">حدد من ترشح لإعدامه:</p>
-                    <div id="voting-rows-container" class="voting-list"></div>
-                    <button class="btn btn-danger" onclick="finishVotingAndExecute()">تنفيذ التصويت وإعلان النتيجة 🗳️</button>
-                </div>
-
-                <!-- صندوق انتقام القناص لو وجد -->
-                <div id="hunter-revenge-box" class="action-card hidden" style="border-color: #ef4444;">
-                    <h4>🎯 طلقة القناص الأخيرة!</h4>
-                    <p class="sub-hint" id="hunter-revenge-text">لقد سقط القناص، اختر شخصاً لتأخذه معك:</p>
-                    <select id="hunter-target-select" class="game-select" style="margin-bottom: 8px;"></select>
-                    <button class="btn btn-danger" onclick="submitHunterRevenge()">أطلق النار وانهي الجولة ⚡</button>
-                </div>
-
-                <div class="status-board">
-                    <h4>حالة سكان البلدة:</h4>
-                    <ul id="players-status-ul"></ul>
-                </div>
-
-                <!-- سجل الأحداث -->
-                <div class="status-board" style="margin-top: 10px; max-height: 90px;">
-                    <h4>📜 سجل الأحداث السابقة:</h4>
-                    <ul id="game-log-ul"></ul>
-                </div>
+        <!-- 2. شاشة إدارة اللاعبين -->
+        <section id="players-screen" class="game-screen">
+            <div class="screen-header-title" style="text-align: center; margin-bottom: 12px;">
+                <h2 class="classic-title" style="font-size: 1.5rem;">سجل سكان القرية</h2>
             </div>
-        </div>
+            <div class="card-box scrollable">
+                <div class="players-config-list" id="players-config-container"></div>
+                <button class="btn-add-player" onclick="GameSetup.addPlayer()">
+                    <i class="fa-solid fa-user-plus"></i> إضافة ساكن جديد
+                </button>
+            </div>
+        </section>
 
-        <!-- الشاشة الخامسة: النهاية -->
-        <div id="screen-gameover" class="screen-panel">
-            <div class="glass-card text-center">
-                <div class="trophy-icon">🏆</div>
-                <h2>انتهت المعركة الكبرى!</h2>
-                <h3 id="winner-announcement" class="winner-txt">الفائزون...</h3>
+        <!-- 3. شاشة الإحصائيات -->
+        <section id="stats-screen" class="game-screen">
+            <div class="card-box center-align">
+                <div style="font-size: 2.5rem; margin-bottom: 10px; color: var(--gold-accent);">📜</div>
+                <h2 class="classic-title">سجل المعارك</h2>
+                <p class="subtitle">سجلات القرى السابقة تحفظ هنا.</p>
+                <button class="btn-classic" onclick="App.switchTab('home-screen', document.querySelectorAll('.bottom-nav-bar .nav-item')[0])">العودة للرئيسية</button>
+            </div>
+        </section>
+
+        <!-- 4. شاشة حول اللعبة -->
+        <section id="about-screen" class="game-screen">
+            <div class="card-box center-align scrollable">
+                <div style="font-size: 2.5rem; margin-bottom: 10px; color: var(--gold-accent);">🐺</div>
+                <h2>قوانين القرية</h2>
+                <p class="subtitle" style="text-align: right; line-height: 1.8;">
+                    لعبة جماعية تتطلب المكر والتحليل. اكتشف المستذئبين المختبئين بين السكان قبل ألا يتبقى أحد.
+                </p>
+                <button class="btn-classic" onclick="App.switchTab('home-screen', document.querySelectorAll('.bottom-nav-bar .nav-item')[0])">العودة للرئيسية</button>
+            </div>
+        </section>
+
+        <!-- 5. شاشة تمرير الهاتف -->
+        <section id="pass-screen" class="game-screen">
+            <div class="card-box center-align scrollable">
+                <div class="pass-phone-top-icon">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                </div>
+                <h2 class="classic-title">تمرير الهاتف</h2>
+                <p class="subtitle">أعط الهاتف للاعب التالي بسرية</p>
                 
-                <div class="recap-box">
-                    <h4>سجل الأدوار الكامل:</h4>
-                    <ul id="recap-ul"></ul>
+                <div class="player-turn-badge-box">
+                    <span id="pass-player-number-badge">الساكن 1</span>
+                    <h3 id="pass-player-name-text" style="color: var(--gold-accent); margin-top: 2px; font-family: 'Amiri', serif;">اسم اللاعب</h3>
                 </div>
 
-                <button class="btn btn-primary btn-lg" onclick="location.reload()">لعب من جديد 🔄</button>
+                <div class="pass-graphic-container">
+                    <img id="pass-card-bg-img" src="" alt="بطاقة اللعبة">
+                </div>
+
+                <p class="subtitle" style="margin-top: 6px;">تأكد من عدم رؤية أحد غيرك للشاشة</p>
+
+                <div id="role-reveal-box" class="hidden-role-box">
+                    <div class="role-avatar-badge">
+                        <img id="current-role-img-badge" src="" alt="الدور">
+                    </div>
+                    <h3 id="role-name-display" style="color: var(--gold-accent); margin-bottom: 6px; font-family: 'Amiri', serif;">دورك</h3>
+                    <p id="role-desc-display" class="role-desc-text"></p>
+                    <div id="night-action-buttons-container" class="actions-scroll-area"></div>
+                </div>
+
+                <button id="reveal-btn" class="btn-classic" onclick="GameFlow.revealNightAction()">
+                    <i class="fa-solid fa-eye"></i> اكشف دورك سراً
+                </button>
+                <button id="next-night-btn" class="btn-classic hidden" onclick="GameFlow.proceedNextNightStep()">
+                    <i class="fa-solid fa-arrow-right"></i> تم الفهم، إخفاء وتمرير الهاتف
+                </button>
             </div>
+        </section>
+
+        <!-- 6. شاشة النهار -->
+        <section id="day-screen" class="game-screen">
+            <div class="card-box center-align">
+                <div style="font-size: 2.5rem; margin-bottom: 10px; color: var(--gold-accent);">☀️</div>
+                <h2 class="classic-title">شروق شمس القرية</h2>
+                <div id="night-result-box" class="alert-box-result"></div>
+                <div id="timer-display-box" style="margin: 10px 0; font-weight: bold; color: var(--gold-accent);">وقت النقاش المتبقي: <span id="discussion-timer">90</span> ثانية</div>
+                <button class="btn-classic" onclick="GameFlow.goToVoting()">
+                    <i class="fa-solid fa-gavel"></i> الانتقال لمحكمة القرية
+                </button>
+            </div>
+        </section>
+
+        <!-- 7. شاشة التصويت -->
+        <section id="voting-screen" class="game-screen">
+            <div class="card-box center-align scrollable">
+                <div style="width: 65px; height: 65px; margin: 0 auto 10px auto; border-radius: 50%; overflow: hidden; border: 1px solid var(--gold-accent);">
+                    <img id="voting-screen-img" src="" alt="تصويت" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h2 class="classic-title">محكمة الإعدام</h2>
+                <p class="subtitle">صوتوا لاختيار المشتبه به:</p>
+                <div id="voting-timer-display" style="font-size: 0.85rem; color: var(--gold-accent); margin-bottom: 6px;">وقت التصويت: <span id="vote-timer-count">45</span> ث</div>
+                <div class="players-config-list" id="voting-list-container"></div>
+            </div>
+        </section>
+
+        <!-- 8. شاشة نهاية اللعبة -->
+        <section id="gameover-screen" class="game-screen">
+            <div class="card-box center-align">
+                <div style="width: 80px; height: 80px; margin: 0 auto 12px auto; border-radius: 50%; overflow: hidden; border: 2px solid var(--gold-accent);">
+                    <img id="gameover-img-icon" src="" alt="الفائز" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h1 id="winner-title" class="classic-title" style="font-size: 1.6rem;">انتهت المعركة</h1>
+                <p id="winner-desc" class="subtitle">الفريق المنتصر...</p>
+                <button class="btn-classic" onclick="location.reload()">
+                    <i class="fa-solid fa-rotate-right"></i> معركة جديدة
+                </button>
+            </div>
+        </section>
+
+        <!-- شريط التنقل السفلي الكلاسيكي -->
+        <nav class="bottom-nav-bar">
+            <button class="nav-item active" onclick="App.switchTab('home-screen', this)">
+                <i class="fa-solid fa-house-chimney"></i>
+                <span>الرئيسية</span>
+            </button>
+            <button class="nav-item" onclick="App.switchTab('players-screen', this)">
+                <i class="fa-solid fa-people-group"></i>
+                <span>السكان</span>
+            </button>
+            <button class="nav-item" onclick="App.switchTab('stats-screen', this)">
+                <i class="fa-solid fa-book-bookmark"></i>
+                <span>السجلات</span>
+            </button>
+            <button class="nav-item" onclick="App.switchTab('about-screen', this)">
+                <i class="fa-solid fa-scroll"></i>
+                <span>القوانين</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <!-- نافذة منبثقة Modal -->
+    <div id="custom-modal-overlay" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-icon-container">
+                <img id="modal-icon-img" src="" alt="تنبيه">
+            </div>
+            <h3 id="modal-title" style="color: var(--gold-accent); margin-bottom: 6px; font-family: 'Amiri', serif;">رسالة القرية</h3>
+            <p id="modal-message" style="color: var(--text-classic); font-size: 0.9rem; line-height: 1.6; margin-bottom: 14px; opacity: 0.9;"></p>
+            <button class="btn-classic" onclick="ModalSystem.close()" style="margin-top: 0;">حسناً</button>
         </div>
     </div>
 
